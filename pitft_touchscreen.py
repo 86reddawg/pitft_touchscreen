@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 #  piTFT touchscreen handling using evdev
 
-import evdev
+
+try:
+    import evdev
+except ImportError:
+    print("Evdev package is not installed.  Run 'pip3 install evdev' or 'pip install evdev' (Python 2.7) to install.")
+    raise(ImportError("Evdev package not found."))
 import threading
 try:
     # python 3.5+
@@ -46,6 +51,7 @@ class pitft_touchscreen(threading.Thread):
                 self.shutdown.set()
         # Loop for getting evdev events
         event = {'time': None, 'id': None, 'x': None, 'y': None, 'touch': None}
+        dropping = False
         while not self.shutdown.is_set():
             for input_event in device.read_loop():
                 if input_event.type == evdev.ecodes.EV_ABS:
@@ -66,18 +72,26 @@ class pitft_touchscreen(threading.Thread):
                 elif input_event.type == evdev.ecodes.EV_KEY:
                     event['touch'] = input_event.value
                 elif input_event.type == evdev.ecodes.SYN_REPORT:
-                    event['time'] = input_event.timestamp()
-                    self.events.put(event)
-                    e = event
-                    event = {'x': e['x'], 'y': e['y']}
-                    try:
-                        event['id'] = e['id']
-                    except KeyError:
-                        event['id'] = None
-                    try:
-                        event['touch'] = e['touch']
-                    except KeyError:
+                    if dropping:
+                        event['x'] = None
+                        event['y'] = None
                         event['touch'] = None
+                        dropping = False
+                    else:
+                        event['time'] = input_event.timestamp()
+                        self.events.put(event)
+                        e = event
+                        event = {'x': e['x'], 'y': e['y']}
+                        try:
+                            event['id'] = e['id']
+                        except KeyError:
+                            event['id'] = None
+                        try:
+                            event['touch'] = e['touch']
+                        except KeyError:
+                            event['touch'] = None
+                elif input_event.type == evdev.ecodes.SYN_DROPPED:
+                    dropping = True
         if self.grab:
             device.ungrab()
 

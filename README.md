@@ -1,10 +1,26 @@
-Very simple piTFT touchscreen handling class. Fully threaded ;-)
-Usage:
+**EVDEV event queue for Touchscreens on the Raspberry Pi**
+
+# Features
+
+* Threaded evdev message queue processing
+* Support for Adafruit Capacitive PiTFT displays
+
+# New Changes
+
+* Support for SYN_DROPPED messages 
+
+# Notes
+
+The EVDEV library is stateful, so messages only include changes from previous state.  This means that at times only a ABS_X or ABS_Y (or sometimes neither) event will be queued on a move or a touch.   When only one is present, it means the previous value did not change.  If the event occurs at the exact same coordinate, neither will be present.   The application using the queue will need to keep this state in order to make sure messages occur at the correct coordinates.
+
+The SYN_DROPPED support added per guidance at https://www.freedesktop.org/software/libevdev/doc/1.1/syn_dropped.html
+
+# Usage
 ```
 @raspberrypi:~/pitft_touchscreen $ python3 example_usage.py 
 Input device /dev/input/touchscreen found
-Do whaterer you want to do while waiting for touchscreen events
-Do whaterer you want to do while waiting for touchscreen events
+Do whatever you want to do while waiting for touchscreen events
+Do whatever you want to do while waiting for touchscreen events
 Event received: {'touch': 1, 'id': 67, 'y': 215, 'time': 1533721688.999557, 'x': 102}
 Event received: {'touch': 1, 'id': 67, 'y': 213, 'time': 1533721689.030115, 'x': 102}
 Event received: {'touch': 1, 'id': 67, 'y': 211, 'time': 1533721689.054368, 'x': 102}
@@ -33,5 +49,5 @@ Event received: {'touch': 1, 'id': 68, 'y': 187, 'time': 1533721690.645795, 'x':
 Event received: {'touch': 1, 'id': 68, 'y': 185, 'time': 1533721690.657941, 'x': 107}
 Event received: {'touch': 1, 'id': 68, 'y': 183, 'time': 1533721690.682163, 'x': 107}
 Event received: {'touch': 0, 'id': -1, 'y': 107, 'time': 1533721690.791378, 'x': 107}
-Do whaterer you want to do while waiting for touchscreen events
+Do whatever you want to do while waiting for touchscreen events
 pi@raspberrypi:~/pitft_touchscreen $
