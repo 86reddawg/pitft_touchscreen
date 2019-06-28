@@ -51,3 +51,6 @@ Event received: {'touch': 1, 'id': 68, 'y': 183, 'time': 1533721690.682163, 'x':
 Event received: {'touch': 0, 'id': -1, 'y': 107, 'time': 1533721690.791378, 'x': 107}
 Do whatever you want to do while waiting for touchscreen events
 pi@raspberrypi:~/pitft_touchscreen $
+
+
+To install, in run 'sudo python setup.py install' in root package directory
