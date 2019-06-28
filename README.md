@@ -53,4 +53,4 @@ Do whatever you want to do while waiting for touchscreen events
 pi@raspberrypi:~/pitft_touchscreen $
 
 
-To install, in run 'sudo python setup.py install' in root package directory
+To install, run 'sudo python setup.py install' in root package directory
